@@ -1,0 +1,16 @@
+Créez la procédure stockée facture qui permet d'afficher les informations nécessaires à une facture en fonction d'un numéro de commande. 
+Cette procédure doit sortir le montant total de la commande.
+
+
+DELIMITER |
+
+CREATE PROCEDURE facture(IN p_ord_id int(3))
+
+BEGIN
+   SELECT CONCAT(cus_lastname,' ',cus_firstname) AS ' Nom du client',ord_id AS 'Numéro de commande',ode_unit_price AS 'Prix unitaire',ode_quantity AS 'Quantité',(ode_unit_price*ode_quantity) AS 'Prix avant remise',ode_discount AS 'Pourcentage remise',ROUND(((ode_unit_price*ode_quantity)*ode_discount/100),2) AS 'Montant remise',ROUND(((ode_unit_price*ode_quantity)-((ode_unit_price*ode_quantity)*ode_discount/100)),2) AS 'Montant facture HT',ROUND((((ode_unit_price*ode_quantity)-(ode_unit_price*ode_quantity*ode_discount/100))*0.2),2) AS 'T.V.A 20 %',ROUND((((ode_unit_price*ode_quantity)-(ode_unit_price*ode_quantity*ode_discount/100))*0.80),2) AS 'Montant TTC'
+   FROM orders_details,orders,customers
+   WHERE ord_id=ode_ord_id AND ord_cus_id=cus_id AND ord_id=p_ord_id;
+END |
+
+DELIMITER ;
+

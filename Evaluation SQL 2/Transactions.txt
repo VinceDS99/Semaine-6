@@ -1,0 +1,45 @@
+**********************************************
+Trouver l'employé le plus ancien
+**********************************************
+SELECT emp_pos_id,emp_lastname, emp_firstname, emp_enter_date
+FROM employees
+GROUP BY emp_lastname 
+HAVING emp_enter_date IN (SELECT MIN(emp_enter_date)
+FROM employees
+WHERE emp_pos_id=14)
+ORDER BY emp_enter_date
+**********************************************
+Lui monter son salaire de 5% et passer les pepinieriste sous sa direction grâce à une transaction
+**********************************************
+START TRANSACTION;
+SELECT emp_id,emp_salary FROM employees where emp_id=38;
+UPDATE employees SET emp_salary = emp_salary*1.05 WHERE emp_id = 38;
+SELECT emp_id,emp_salary FROM employees where emp_id=38;
+SELECT emp_id,emp_pos_id,emp_superior_id FROM employees where emp_pos_id=14;
+UPDATE employees SET emp_superior_id = 38 WHERE emp_pos_id = 14 AND emp_id <> 38;
+SELECT emp_id,emp_pos_id,emp_superior_id FROM employees where emp_pos_id=14;
+
+**********************************************
+La base de données ne contient actuellement que des employés en postes. 
+Il a été choisi de garder en base une liste des anciens collaborateurs de l'entreprise parti en retraite.
+Il va donc vous falloir ajouter une ligne dans la table posts pour référencer les employés à la retraite
+**********************************************
+
+1.Décrire les opérations qui seront à réaliser sur la table posts.
+
+Il va falloir créer une nouvelle ligne montrant qu'un employé est parti à la retraite et donner l'id de ce nouveau poste aux employés parti à la retraite
+
+
+
+2.Ecrire les requêtes correspondant à ces opéarations.
+INSERT INTO posts (pos_id,pos_libelle) values (36,'Retraite')
+
+
+
+3.Ecrire la transaction
+START TRANSACTION;
+INSERT INTO posts (pos_id,pos_libelle) values (36,'Retraite');
+
+Il n'y a actuellement aucun employé de la base de données à la retraite, il n'ya donc pas de mise à jour de l'id du poste à faire
+
+

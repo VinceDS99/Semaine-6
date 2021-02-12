@@ -1,0 +1,38 @@
+******************************************************************************************************************************
+
+
+--Création de la table 'commander_articles' sur laquelle le nom et la quantité de produits devant être commandé s'afficheront 
+
+DROP TABLE IF EXISTS `commander_articles`;
+CREATE TABLE IF NOT EXISTS `commander_articles` (
+  `codart` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `qte` int(50) NOT NULL,
+  `date` datetime(6) NOT NULL,
+ KEY (`codart`)
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
+
+
+ALTER TABLE `commander_articles`
+  ADD CONSTRAINT `codart_1` FOREIGN KEY (`codart`) REFERENCES `products` (`pro_id`);
+
+
+ALTER TABLE commander_articles ENGINE=InnoDB  
+
+******************************************************************************************************************************
+--Tigger after_products_update fonctionnel aprés essai des trois différents cas
+
+
+DELIMITER |
+CREATE TRIGGER after_products_update AFTER UPDATE ON products -- La requête s'execute aprés une modification sur la table 'products'.
+FOR EACH ROW
+BEGIN
+DELETE FROM commander_articles -- S'il existe déjà une ligne pour le produit modifié, on supprime la ligne pour mettre à jour.
+    WHERE codart = NEW.pro_id;
+    IF NEW.pro_stock < NEW.pro_stock_alert -- Si le stock au moment de la modification est inférieur au stock minimum, une ligne est créée 
+      THEN
+       INSERT  INTO commander_articles(codart,qte,date) VALUES (NEW.pro_id,NEW.pro_stock_alert-NEW.pro_stock,CURRENT_TIMESTAMP);
+    END IF;
+END |
+DELIMITER ;
+
+******************************************************************************************************************************
